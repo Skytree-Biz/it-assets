@@ -602,7 +602,7 @@ td{padding:9px 11px;vertical-align:middle;}
     </div>
 
     <!-- EDIT MODE -->
-    <div id="modal-edit" class="mb" style="display:none;">
+    <div id="modal-edit" class="mb" style="display:none;min-height:200px;">
       <div class="tabs">
         <div class="tab active" onclick="swTab(this,'t-info')">Employee</div>
         <div class="tab" onclick="swTab(this,'t-assets')">Assets</div>
@@ -1537,9 +1537,14 @@ function switchToEdit() {
   document.getElementById('modal-view').style.display = 'none';
   document.getElementById('modal-edit').style.display = 'block';
   document.getElementById('del-btn').style.display = '';
+  var tinfo = document.getElementById('t-info');
+  var tassets = document.getElementById('t-assets');
+  if (tinfo) tinfo.style.display = 'block';
+  if (tassets) tassets.style.display = 'none';
+  document.querySelectorAll('#modal-edit .tab').forEach(function(t,i){
+    t.classList.toggle('active', i === 0);
+  });
   fillForm(r);
-  var firstTab = document.querySelector('#modal-edit .tab');
-  if (firstTab) swTab(firstTab, 't-info');
 }
 
 function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
@@ -1557,7 +1562,18 @@ function setVal(id, val) {
   var el = document.getElementById(id);
   if (!el) return;
   if (el.type === 'checkbox') el.checked = !!val;
-  else el.value = val || '';
+  else {
+    el.value = val || '';
+    // For selects, try to find matching option by text if value didn't match
+    if (el.tagName === 'SELECT' && el.value !== (val||'') && val) {
+      for (var i = 0; i < el.options.length; i++) {
+        if (el.options[i].text === val || el.options[i].text.replace(/&amp;/g,'&') === val) {
+          el.selectedIndex = i;
+          break;
+        }
+      }
+    }
+  }
 }
 function fillForm(r) {
   setVal('f-name', r.name);
@@ -1578,10 +1594,17 @@ function fillForm(r) {
 }
 
 function swTab(el, id) {
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  // Only update tabs within the same parent container
+  var container = el.closest('.tabs') ? el.closest('.tabs').parentElement : document.body;
+  container.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
   el.classList.add('active');
-  ['t-info','t-assets','t-notes'].forEach(function(t){document.getElementById(t).style.display='none';});
-  document.getElementById(id).style.display = 'block';
+  // Hide all tab panels that exist
+  ['t-info','t-assets','t-notes'].forEach(function(tid){
+    var el2 = document.getElementById(tid);
+    if (el2) el2.style.display = 'none';
+  });
+  var target = document.getElementById(id);
+  if (target) target.style.display = 'block';
 }
 
 // ── CHECKLISTS ───────────────────────────────────────────────
