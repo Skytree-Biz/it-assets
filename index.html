@@ -336,7 +336,7 @@ td{padding:9px 11px;vertical-align:middle;}
       <div class="card" style="margin-bottom:16px;">
         <div class="ch"><span class="ct">Laptop Fleet</span><span id="laptop-count" style="font-size:12px;color:var(--t4);font-family:var(--mono);"></span></div>
         <div class="cb">
-          <div id="laptop-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;"></div>
+          <div id="laptop-summary" style="margin-bottom:16px;"></div>
           <table style="width:100%;border-collapse:collapse;font-size:13px;">
             <thead><tr style="border-bottom:2px solid var(--b1);background:var(--s2);">
               <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Employee</th>
@@ -357,7 +357,7 @@ td{padding:9px 11px;vertical-align:middle;}
       <div class="card" style="margin-bottom:16px;">
         <div class="ch"><span class="ct">Phone Fleet</span><span id="phone-count" style="font-size:12px;color:var(--t4);font-family:var(--mono);"></span></div>
         <div class="cb">
-          <div id="phone-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;"></div>
+          <div id="phone-summary" style="margin-bottom:16px;"></div>
           <table style="width:100%;border-collapse:collapse;font-size:13px;">
             <thead><tr style="border-bottom:2px solid var(--b1);background:var(--s2);">
               <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Employee</th>
@@ -376,7 +376,7 @@ td{padding:9px 11px;vertical-align:middle;}
       <div class="card" style="margin-bottom:16px;">
         <div class="ch"><span class="ct">Monitor Fleet</span><span id="monitor-count" style="font-size:12px;color:var(--t4);font-family:var(--mono);"></span></div>
         <div class="cb">
-          <div id="monitor-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;"></div>
+          <div id="monitor-summary" style="margin-bottom:16px;"></div>
           <table style="width:100%;border-collapse:collapse;font-size:13px;">
             <thead><tr style="border-bottom:2px solid var(--b1);background:var(--s2);">
               <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Employee</th>
@@ -414,7 +414,7 @@ td{padding:9px 11px;vertical-align:middle;}
       <div class="card" style="margin-bottom:16px;">
         <div class="ch"><span class="ct">Mice / Wireless Mice</span><span id="mice-count" style="font-size:12px;color:var(--t4);font-family:var(--mono);"></span></div>
         <div class="cb">
-          <div id="mice-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;"></div>
+          <div id="mice-summary" style="margin-bottom:16px;"></div>
           <table style="width:100%;border-collapse:collapse;font-size:13px;">
             <thead><tr style="border-bottom:2px solid var(--b1);background:var(--s2);">
               <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Employee</th>
@@ -1021,7 +1021,7 @@ function isAvailable(r) {
 }
 
 function activeEmployees() {
-  return DB.filter(function(r) { return !isAvailable(r); });
+  return DB.filter(function(r) { return !isAvailable(r) && r.status !== 'Off boarded'; });
 }
 
 function availablePool() {
@@ -1186,14 +1186,14 @@ function modelSummary(items, modelFn) {
 function summaryCards(items, modelFn, containerId, countId, label) {
   var mc = modelSummary(items, modelFn);
   document.getElementById(countId).textContent = items.length + ' assigned';
-  var cols = ['var(--acc)','var(--teal)','var(--violet)','var(--amber)'];
-  document.getElementById(containerId).innerHTML = mc.slice(0,4).map(function(entry,i) {
-    return '<div style="background:var(--s1);border:1.5px solid var(--b1);border-radius:10px;padding:12px 14px;">' +
-      '<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);margin-bottom:4px;">' + label + '</div>' +
-      '<div style="font-size:18px;font-weight:800;color:var(--t1);">' + entry[1] + '</div>' +
-      '<div style="font-size:11px;color:var(--t3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + entry[0] + '">' + entry[0] + '</div>' +
-      '</div>';
-  }).join('');
+  document.getElementById(containerId).innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:4px;">' +
+    mc.map(function(entry) {
+      return '<div style="background:var(--s1);border:1.5px solid var(--b1);border-radius:9px;padding:10px 14px;min-width:130px;max-width:200px;">' +
+        '<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);margin-bottom:3px;">' + label + '</div>' +
+        '<div style="font-size:22px;font-weight:800;color:var(--t1);">' + entry[1] + '</div>' +
+        '<div style="font-size:11px;color:var(--t3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + entry[0] + '">' + entry[0] + '</div>' +
+        '</div>';
+    }).join('') + '</div>';
 }
 
 function rowStyle() {
@@ -1208,7 +1208,7 @@ function serialCell(s) {
 }
 
 function renderLaptops() {
-  var items = activeEmployees().filter(function(r){ return r.laptop_model || r.laptop_type; });
+  var items = activeEmployees().filter(function(r){ return r.laptop_type || r.laptop_model; });
   summaryCards(items, function(r){return r.laptop_model;}, 'laptop-summary', 'laptop-count', 'Model');
   document.getElementById('laptop-tbody').innerHTML = items.map(function(r) {
     var idx = DB.indexOf(r);
@@ -1225,7 +1225,7 @@ function renderLaptops() {
 }
 
 function renderPhones() {
-  var items = activeEmployees().filter(function(r){ return r.has_phone || r.phone_model; });
+  var items = activeEmployees().filter(function(r){ return r.has_phone; });
   summaryCards(items, function(r){return r.phone_model;}, 'phone-summary', 'phone-count', 'Model');
   document.getElementById('phone-tbody').innerHTML = items.map(function(r) {
     var idx = DB.indexOf(r);
@@ -1239,7 +1239,7 @@ function renderPhones() {
 }
 
 function renderMonitors() {
-  var items = activeEmployees().filter(function(r){ return r.has_monitor || r.monitor1_model || r.monitor2_model; });
+  var items = activeEmployees().filter(function(r){ return r.has_monitor; });
   summaryCards(items, function(r){return r.monitor1_model||r.monitor2_model;}, 'monitor-summary', 'monitor-count', 'Model');
   document.getElementById('monitor-tbody').innerHTML = items.map(function(r) {
     var idx = DB.indexOf(r);
@@ -1255,7 +1255,7 @@ function renderMonitors() {
 }
 
 function renderMice() {
-  var items = activeEmployees().filter(function(r){ return r.has_mouse || r.mouse_model; });
+  var items = activeEmployees().filter(function(r){ return r.has_mouse; });
   summaryCards(items, function(r){return r.mouse_model;}, 'mice-summary', 'mice-count', 'Model');
   document.getElementById('mice-tbody').innerHTML = items.map(function(r) {
     var idx = DB.indexOf(r);
@@ -1534,11 +1534,12 @@ function openEdit(idx) {
 
 function switchToEdit() {
   var r = DB[editIdx];
-  fillForm(r);
-  document.getElementById('del-btn').style.display = '';
   document.getElementById('modal-view').style.display = 'none';
   document.getElementById('modal-edit').style.display = 'block';
-  swTab(document.querySelector('.tab'), 't-info');
+  document.getElementById('del-btn').style.display = '';
+  fillForm(r);
+  var firstTab = document.querySelector('#modal-edit .tab');
+  if (firstTab) swTab(firstTab, 't-info');
 }
 
 function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
@@ -1552,23 +1553,28 @@ function clearForm() {
   var m2 = document.getElementById('f-monitor2-model'); if(m2) m2.value='';
 }
 
+function setVal(id, val) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  if (el.type === 'checkbox') el.checked = !!val;
+  else el.value = val || '';
+}
 function fillForm(r) {
-  document.getElementById('f-name').value = r.name||'';
-  document.getElementById('f-type').value = r.type||'Employee';
-  document.getElementById('f-dept-m').value = r.department||'';
-  document.getElementById('f-status').value = r.status||'Active';
-  document.getElementById('f-laptop').value = r.laptop_model||'';
-  document.getElementById('f-tag').value = r.asset_tag||'';
-  document.getElementById('f-serial').value = r.laptop_serial||'';
-  document.getElementById('f-date').value = r.purchase_date||'';
-  document.getElementById('f-price').value = r.price||'';
-  document.getElementById('f-mouse').checked = !!r.has_mouse;
-  document.getElementById('f-phone').checked = !!r.has_phone;
-  document.getElementById('f-monitor').checked = !!r.has_monitor;
-  document.getElementById('f-phone-model').value = r.phone_model||'';
-  document.getElementById('f-monitor-model').value = r.monitor1_model||'';
-  document.getElementById('f-monitor2-model').value = r.monitor2_model||'';
-  document.getElementById('f-notes').value = r.notes||'';
+  setVal('f-name', r.name);
+  setVal('f-type', r.type||'Employee');
+  setVal('f-dept-m', r.department);
+  setVal('f-status', r.status||'Active');
+  setVal('f-laptop', r.laptop_model);
+  setVal('f-tag', r.asset_tag);
+  setVal('f-serial', r.laptop_serial);
+  setVal('f-date', r.purchase_date);
+  setVal('f-price', r.price);
+  setVal('f-phone-model', r.phone_model);
+  setVal('f-phone-serial', r.phone_serial);
+  setVal('f-monitor-model', r.monitor1_model);
+  setVal('f-monitor-serial', r.monitor1_serial);
+  setVal('f-monitor2-model', r.monitor2_model);
+  setVal('f-monitor2-serial', r.monitor2_serial);
 }
 
 function swTab(el, id) {
