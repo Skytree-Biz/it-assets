@@ -251,15 +251,21 @@ td{padding:9px 11px;vertical-align:middle;}
   <nav class="sb-nav">
     <div class="sb-sec">Overview</div>
     <div class="ni active" onclick="nav('dashboard',this)"><span class="ni-icon">◼</span>Dashboard</div>
-    <div class="ni" onclick="nav('assets',this)"><span class="ni-icon">◈</span>All Assets<span class="nbadge neutral" id="nb-total">—</span></div>
+    <div class="sb-sec">Assets</div>
+    <div class="ni" onclick="nav('assets',this)"><span class="ni-icon">◈</span>All Employees<span class="nbadge neutral" id="nb-total">—</span></div>
+    <div class="ni" onclick="nav('laptops',this)"><span class="ni-icon">&#x1F4BB;</span>Laptops</div>
+    <div class="ni" onclick="nav('phones',this)"><span class="ni-icon">&#x1F4F1;</span>Phones</div>
+    <div class="ni" onclick="nav('monitors',this)"><span class="ni-icon">&#x1F5A5;</span>Monitors</div>
+    <div class="ni" onclick="nav('keyboards',this)"><span class="ni-icon">&#x2328;</span>Keyboards</div>
+    <div class="ni" onclick="nav('inventory',this)"><span class="ni-icon">&#x1F4E6;</span>Available Pool<span class="nbadge neutral" id="nb-inventory">—</span></div>
     <div class="sb-sec">Workflows</div>
-    <div class="ni" onclick="nav('onboard',this)"><span class="ni-icon">⊕</span>Onboarding</div>
-    <div class="ni" onclick="nav('offboard',this)"><span class="ni-icon">⊖</span>Offboarding</div>
+    <div class="ni" onclick="nav('onboard',this)"><span class="ni-icon">&#x2295;</span>Onboarding</div>
+    <div class="ni" onclick="nav('offboard',this)"><span class="ni-icon">&#x2296;</span>Offboarding</div>
     <div class="sb-sec">Analysis</div>
-    <div class="ni" onclick="nav('reports',this)"><span class="ni-icon">▦</span>Reports</div>
-    <div class="ni" onclick="nav('alerts',this)"><span class="ni-icon">△</span>Alerts<span class="nbadge warn" id="nb-alerts">—</span></div>
+    <div class="ni" onclick="nav('reports',this)"><span class="ni-icon">&#x25A6;</span>Reports</div>
+    <div class="ni" onclick="nav('alerts',this)"><span class="ni-icon">&#x25B3;</span>Alerts<span class="nbadge warn" id="nb-alerts">—</span></div>
     <div class="sb-sec">Settings</div>
-    <div class="ni" onclick="nav('setup',this)"><span class="ni-icon">⚙</span>Setup</div>
+    <div class="ni" onclick="nav('setup',this)"><span class="ni-icon">&#x2699;</span>Setup</div>
   </nav>
   <div class="sb-foot">
     <div class="sf-info">Source: Monday.com<br>Board: IT Asset Tracking<br>Last sync: <span id="last-sync">Never</span></div>
@@ -319,6 +325,105 @@ td{padding:9px 11px;vertical-align:middle;}
               <th></th>
             </tr></thead>
             <tbody id="atbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAPTOPS -->
+    <div id="p-laptops" class="panel">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="ch"><span class="ct">Laptop Fleet</span><span id="laptop-count" style="font-size:12px;color:var(--t4);font-family:var(--mono);"></span></div>
+        <div class="cb">
+          <div id="laptop-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;"></div>
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead><tr style="border-bottom:2px solid var(--b1);background:var(--s2);">
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Employee</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Model</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Asset Tag</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Serial Number</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Price</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Dept</th>
+            </tr></thead>
+            <tbody id="laptop-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHONES -->
+    <div id="p-phones" class="panel">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="ch"><span class="ct">Phone Fleet</span><span id="phone-count" style="font-size:12px;color:var(--t4);font-family:var(--mono);"></span></div>
+        <div class="cb">
+          <div id="phone-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;"></div>
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead><tr style="border-bottom:2px solid var(--b1);background:var(--s2);">
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Employee</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Model</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Serial Number</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Department</th>
+            </tr></thead>
+            <tbody id="phone-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MONITORS -->
+    <div id="p-monitors" class="panel">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="ch"><span class="ct">Monitor Fleet</span><span id="monitor-count" style="font-size:12px;color:var(--t4);font-family:var(--mono);"></span></div>
+        <div class="cb">
+          <div id="monitor-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;"></div>
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead><tr style="border-bottom:2px solid var(--b1);background:var(--s2);">
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Employee</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Monitor 1 Model</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Serial</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Monitor 2 Model</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Serial</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Dept</th>
+            </tr></thead>
+            <tbody id="monitor-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- KEYBOARDS -->
+    <div id="p-keyboards" class="panel">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="ch"><span class="ct">Keyboards</span><span id="keyboard-count" style="font-size:12px;color:var(--t4);font-family:var(--mono);"></span></div>
+        <div class="cb">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead><tr style="border-bottom:2px solid var(--b1);background:var(--s2);">
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Employee</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Model</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Department</th>
+            </tr></thead>
+            <tbody id="keyboard-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- AVAILABLE POOL -->
+    <div id="p-inventory" class="panel">
+      <div class="banner info" style="margin-bottom:14px;">These are unassigned assets — items where the employee name is "Available" or similar in Monday.com.</div>
+      <div class="card">
+        <div class="ch"><span class="ct">Available Asset Pool</span><span id="inv-count" style="font-size:12px;color:var(--t4);font-family:var(--mono);"></span></div>
+        <div class="cb">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead><tr style="border-bottom:2px solid var(--b1);background:var(--s2);">
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Item Name</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Type</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Model</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Asset Tag</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Serial</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Price</th>
+            </tr></thead>
+            <tbody id="inventory-tbody"></tbody>
           </table>
         </div>
       </div>
@@ -472,7 +577,7 @@ td{padding:9px 11px;vertical-align:middle;}
 
       <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end;">
         <button class="btn btn-ghost" onclick="closeModal()">Close</button>
-        <button class="btn btn-ghost" id="vw-edit-btn" onclick="switchToEdit()">Edit in Monday.com</button>
+        <button class="btn btn-acc" id="vw-edit-btn" onclick="switchToEdit()">Edit Record</button>
       </div>
     </div>
 
@@ -855,13 +960,18 @@ function confirmDelete() {
 
 // ── NAV ──────────────────────────────────────────────────────
 var PAGE_META = {
-  dashboard: ['Dashboard','Overview'],
-  assets: ['All Assets','Browse and edit'],
-  onboard: ['Onboarding','New employee workflow'],
-  offboard: ['Offboarding','Exit workflow'],
-  reports: ['Reports','Fleet analytics'],
-  alerts: ['Alerts','Data quality'],
-  setup: ['Setup','Connection settings']
+  dashboard:  ['Dashboard','Overview'],
+  assets:     ['All Employees','Browse and edit'],
+  laptops:    ['Laptops','Fleet overview'],
+  phones:     ['Phones','Fleet overview'],
+  monitors:   ['Monitors','Fleet overview'],
+  keyboards:  ['Keyboards','Fleet overview'],
+  inventory:  ['Available Pool','Unassigned assets'],
+  onboard:    ['Onboarding','New employee workflow'],
+  offboard:   ['Offboarding','Exit workflow'],
+  reports:    ['Reports','Fleet analytics'],
+  alerts:     ['Alerts','Data quality'],
+  setup:      ['Setup','Connection settings']
 };
 
 function nav(id, el) {
@@ -878,14 +988,34 @@ function nav(id, el) {
   if (id === 'setup') renderSetup();
 }
 
+function isAvailable(r) {
+  var n = (r.name||'').toLowerCase().trim();
+  return n === 'available' || n.startsWith('available ') || n === 'spare' || n === 'unassigned' || n === 'pool';
+}
+
+function activeEmployees() {
+  return DB.filter(function(r) { return !isAvailable(r); });
+}
+
+function availablePool() {
+  return DB.filter(function(r) { return isAvailable(r); });
+}
+
 function renderAll() {
   renderDashboard();
-  if (currentPage === 'assets') renderTbl();
-  if (currentPage === 'reports') renderReports();
-  if (currentPage === 'alerts') renderAlerts();
-  if (currentPage === 'setup') renderSetup();
-  document.getElementById('nb-total').textContent = DB.length;
+  if (currentPage === 'assets')    renderTbl();
+  if (currentPage === 'laptops')   renderLaptops();
+  if (currentPage === 'phones')    renderPhones();
+  if (currentPage === 'monitors')  renderMonitors();
+  if (currentPage === 'keyboards') renderKeyboards();
+  if (currentPage === 'inventory') renderInventory();
+  if (currentPage === 'reports')   renderReports();
+  if (currentPage === 'alerts')    renderAlerts();
+  if (currentPage === 'setup')     renderSetup();
+  document.getElementById('nb-total').textContent = activeEmployees().length;
   document.getElementById('nb-alerts').textContent = buildAlerts().length;
+  var inv = availablePool();
+  document.getElementById('nb-inventory').textContent = inv.length;
 }
 
 // ── DASHBOARD ────────────────────────────────────────────────
@@ -953,6 +1083,7 @@ function renderTbl() {
   var fS = document.getElementById('f-stat').value;
 
   var data = DB.filter(function(r) {
+    if (isAvailable(r)) return false; // show in inventory tab instead
     if (fS && r.status !== fS) return false;
     if (fD && r.department !== fD) return false;
     if (fT && r.type !== fT) return false;
@@ -1014,6 +1145,118 @@ function renderTbl() {
 }
 
 // ── REPORTS ──────────────────────────────────────────────────
+// -- DEVICE PAGES ------------------------------------------
+function modelSummary(items, modelFn) {
+  var counts = {};
+  items.forEach(function(r) {
+    var m = modelFn(r) || 'Unknown';
+    counts[m] = (counts[m]||0) + 1;
+  });
+  return Object.entries(counts).sort(function(a,b){return b[1]-a[1];});
+}
+
+function summaryCards(items, modelFn, containerId, countId, label) {
+  var mc = modelSummary(items, modelFn);
+  document.getElementById(countId).textContent = items.length + ' assigned';
+  var cols = ['var(--acc)','var(--teal)','var(--violet)','var(--amber)'];
+  document.getElementById(containerId).innerHTML = mc.slice(0,4).map(function(entry,i) {
+    return '<div style="background:var(--s1);border:1.5px solid var(--b1);border-radius:10px;padding:12px 14px;">' +
+      '<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);margin-bottom:4px;">' + label + '</div>' +
+      '<div style="font-size:18px;font-weight:800;color:var(--t1);">' + entry[1] + '</div>' +
+      '<div style="font-size:11px;color:var(--t3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + entry[0] + '">' + entry[0] + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function rowStyle() {
+  return 'border-bottom:1px solid var(--b1);transition:background .1s;cursor:pointer;';
+}
+function tdStyle(extra) {
+  return 'padding:9px 11px;vertical-align:middle;' + (extra||'');
+}
+function serialCell(s) {
+  return s ? '<span style="font-family:var(--mono);font-size:12px;">' + esc(s) + '</span>' :
+             '<span style="color:var(--red);font-size:12px;font-weight:600;">Missing</span>';
+}
+
+function renderLaptops() {
+  var items = activeEmployees().filter(function(r){ return r.laptop_model || r.laptop_type; });
+  summaryCards(items, function(r){return r.laptop_model;}, 'laptop-summary', 'laptop-count', 'Model');
+  document.getElementById('laptop-tbody').innerHTML = items.map(function(r) {
+    var idx = DB.indexOf(r);
+    var price = r.price && !isNaN(+r.price) && +r.price < 50000 ? 'EUR' + (+r.price).toFixed(0) : '—';
+    return '<tr style="' + rowStyle() + '" onclick="openEdit(' + idx + ')">' +
+      '<td style="' + tdStyle() + '"><div style="display:flex;align-items:center;gap:7px;"><div class="av" style="background:var(--acc);width:26px;height:26px;font-size:10px;">' + r.name.split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase() + '</div><span style="font-weight:600;">' + esc(r.name) + '</span></div></td>' +
+      '<td style="' + tdStyle('font-size:13px;') + '">' + esc(r.laptop_model||r.laptop_type||'—') + '</td>' +
+      '<td style="' + tdStyle('font-family:var(--mono);font-size:11px;color:var(--t3);') + '">' + (r.asset_tag||'—') + '</td>' +
+      '<td style="' + tdStyle() + '">' + serialCell(r.laptop_serial) + '</td>' +
+      '<td style="' + tdStyle('font-family:var(--mono);font-size:12px;') + '">' + price + '</td>' +
+      '<td style="' + tdStyle('font-size:12px;color:var(--t3);') + '">' + (r.department||'—') + '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--t4);">No laptops found</td></tr>';
+}
+
+function renderPhones() {
+  var items = activeEmployees().filter(function(r){ return r.has_phone || r.phone_model; });
+  summaryCards(items, function(r){return r.phone_model;}, 'phone-summary', 'phone-count', 'Model');
+  document.getElementById('phone-tbody').innerHTML = items.map(function(r) {
+    var idx = DB.indexOf(r);
+    return '<tr style="' + rowStyle() + '" onclick="openEdit(' + idx + ')">' +
+      '<td style="' + tdStyle() + '"><div style="display:flex;align-items:center;gap:7px;"><div class="av" style="background:var(--green);width:26px;height:26px;font-size:10px;">' + r.name.split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase() + '</div><span style="font-weight:600;">' + esc(r.name) + '</span></div></td>' +
+      '<td style="' + tdStyle('font-size:13px;') + '">' + esc(r.phone_model||'Assigned') + '</td>' +
+      '<td style="' + tdStyle() + '">' + serialCell(r.phone_serial) + '</td>' +
+      '<td style="' + tdStyle('font-size:12px;color:var(--t3);') + '">' + (r.department||'—') + '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--t4);">No phones found</td></tr>';
+}
+
+function renderMonitors() {
+  var items = activeEmployees().filter(function(r){ return r.has_monitor || r.monitor1_model || r.monitor2_model; });
+  summaryCards(items, function(r){return r.monitor1_model||r.monitor2_model;}, 'monitor-summary', 'monitor-count', 'Model');
+  document.getElementById('monitor-tbody').innerHTML = items.map(function(r) {
+    var idx = DB.indexOf(r);
+    return '<tr style="' + rowStyle() + '" onclick="openEdit(' + idx + ')">' +
+      '<td style="' + tdStyle() + '"><div style="display:flex;align-items:center;gap:7px;"><div class="av" style="background:var(--violet);width:26px;height:26px;font-size:10px;">' + r.name.split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase() + '</div><span style="font-weight:600;">' + esc(r.name) + '</span></div></td>' +
+      '<td style="' + tdStyle('font-size:13px;') + '">' + esc(r.monitor1_model||'Assigned') + '</td>' +
+      '<td style="' + tdStyle() + '">' + serialCell(r.monitor1_serial) + '</td>' +
+      '<td style="' + tdStyle('font-size:13px;') + '">' + esc(r.monitor2_model||'—') + '</td>' +
+      '<td style="' + tdStyle() + '">' + serialCell(r.monitor2_serial) + '</td>' +
+      '<td style="' + tdStyle('font-size:12px;color:var(--t3);') + '">' + (r.department||'—') + '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--t4);">No monitors found</td></tr>';
+}
+
+function renderKeyboards() {
+  var items = activeEmployees().filter(function(r){ return r.has_keyboard; });
+  document.getElementById('keyboard-count').textContent = items.length + ' assigned';
+  document.getElementById('keyboard-tbody').innerHTML = items.map(function(r) {
+    var idx = DB.indexOf(r);
+    return '<tr style="' + rowStyle() + '" onclick="openEdit(' + idx + ')">' +
+      '<td style="' + tdStyle() + '"><div style="display:flex;align-items:center;gap:7px;"><div class="av" style="background:var(--amber);width:26px;height:26px;font-size:10px;">' + r.name.split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase() + '</div><span style="font-weight:600;">' + esc(r.name) + '</span></div></td>' +
+      '<td style="' + tdStyle('font-size:13px;') + '">Assigned</td>' +
+      '<td style="' + tdStyle('font-size:12px;color:var(--t3);') + '">' + (r.department||'—') + '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="3" style="text-align:center;padding:30px;color:var(--t4);">No keyboards found</td></tr>';
+}
+
+function renderInventory() {
+  var items = availablePool();
+  document.getElementById('inv-count').textContent = items.length + ' items';
+  document.getElementById('nb-inventory').textContent = items.length;
+  document.getElementById('inventory-tbody').innerHTML = items.map(function(r) {
+    var idx = DB.indexOf(r);
+    var price = r.price && !isNaN(+r.price) && +r.price < 50000 ? 'EUR' + (+r.price).toFixed(0) : '—';
+    return '<tr style="' + rowStyle() + '" onclick="openEdit(' + idx + ')">' +
+      '<td style="' + tdStyle('font-weight:600;') + '">' + esc(r.name) + '</td>' +
+      '<td style="' + tdStyle() + '">' + esc(r.laptop_type||r.type||'—') + '</td>' +
+      '<td style="' + tdStyle('font-size:13px;') + '">' + esc(r.laptop_model||'—') + '</td>' +
+      '<td style="' + tdStyle('font-family:var(--mono);font-size:11px;color:var(--t3);') + '">' + (r.asset_tag||'—') + '</td>' +
+      '<td style="' + tdStyle() + '">' + serialCell(r.laptop_serial) + '</td>' +
+      '<td style="' + tdStyle('font-family:var(--mono);font-size:12px;') + '">' + price + '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--t4);">No available items</td></tr>';
+}
+
 function renderReports() {
   var active = DB.filter(function(r){return r.status==='Active';});
   var priced = active.filter(function(r){return r.price&&!isNaN(+r.price)&&+r.price<50000;});
