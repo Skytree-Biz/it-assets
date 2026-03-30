@@ -476,7 +476,7 @@ td{padding:9px 11px;vertical-align:middle;}
       <div id="t-assets" style="display:none;">
         <div class="slbl2">Laptop</div>
         <div class="fgrid">
-          <div class="fg"><label>Model</label><input id="f-laptop" type="text" placeholder="e.g. HP Probook 445 G11"></div>
+          <div class="fg"><label>Laptop Model</label><input id="f-laptop" type="text" placeholder="e.g. HP Probook 445 G11"></div>
           <div class="fg"><label>Asset Tag</label><input id="f-tag" type="text" placeholder="e.g. AMS-LAP-140"></div>
           <div class="fg"><label>Serial Number</label><input id="f-serial" type="text" placeholder="e.g. 1H844508WL"></div>
           <div class="fg"><label>Purchase Date</label><input id="f-date" type="date"></div>
@@ -490,7 +490,8 @@ td{padding:9px 11px;vertical-align:middle;}
         </div>
         <div class="fgrid">
           <div class="fg"><label>Phone Model</label><input id="f-phone-model" type="text" placeholder="e.g. Samsung Galaxy S22"></div>
-          <div class="fg"><label>Monitor Model</label><input id="f-monitor-model" type="text" placeholder="e.g. AOC 27 inch"></div>
+          <div class="fg"><label>Monitor 1 Model</label><input id="f-monitor-model" type="text" placeholder="e.g. AOC 27 inch"></div>
+          <div class="fg"><label>Monitor 2 Model</label><input id="f-monitor2-model" type="text" placeholder="e.g. LG UHD 4K"></div>
         </div>
       </div>
       <div id="t-notes" style="display:none;">
@@ -513,12 +514,36 @@ td{padding:9px 11px;vertical-align:middle;}
 var BOARD_ID = '1451820266';
 var MONDAY_API = 'https://api.monday.com/v2';
 
-// Column IDs — we'll discover these on first load
+// Real column IDs from Monday.com board 1451820266
 var COL = {
-  status: '', type_col: '', department: '', laptop_model: '',
-  asset_tag: '', laptop_serial: '', purchase_date: '', price: '',
-  has_mouse: '', has_phone: '', has_monitor: '',
-  phone_model: '', monitor_model: '', notes: ''
+  status:        'status__1',
+  type_col:      'dup__of_employee_status__1',
+  department:    'color5__1',
+  laptop_type:   'asset_type_1',
+  laptop_model:  'asset_description',
+  laptop_serial: 'serial_number',
+  laptop_tag:    'asset_tags',
+  purchase_date: 'date_mknhkbh5',
+  price:         'numeric_mknh5qrh',
+  invoice:       'text_mknhc3p0',
+  mouse_type:    'asset_type_2',
+  mouse_model:   'asset_description5',
+  mouse_serial:  'serial_number6',
+  mouse_tag:     'text',
+  phone_type:    'asset_type_3',
+  phone_model:   'asset_description7',
+  phone_serial:  'serial_number34',
+  phone_tag:     'dup__of_asset_tags__1',
+  monitor1_type:   'asset_type_4',
+  monitor1_model:  'asset_description9',
+  monitor1_serial: 'serial_number10',
+  monitor2_type:   'color0__1',
+  monitor2_model:  'color3__1',
+  monitor2_serial: 'dup__of_serial_number3__1',
+  keyboard_type:   'asset_type_5',
+  other_devices:   'color2__1',
+  other_model:     'asset_description1',
+  other_serial:    'serial_number__1'
 };
 
 // ── STATE ────────────────────────────────────────────────────
@@ -572,31 +597,9 @@ function mondayQuery(query, variables) {
   });
 }
 
-// ── DISCOVER COLUMNS ─────────────────────────────────────────
+// Column IDs are hardcoded from real board — no discovery needed
 function discoverColumns() {
-  var q = 'query { boards(ids: [' + BOARD_ID + ']) { columns { id title type } } }';
-  return mondayQuery(q).then(function(data) {
-    var cols = data.boards[0].columns;
-    cols.forEach(function(col) {
-      var t = col.title.toLowerCase();
-      if (t === 'status' || t === 'status ') COL.status = col.id;
-      else if (t.includes('type') && !t.includes('laptop')) COL.type_col = col.id;
-      else if (t.includes('department') || t.includes('dept')) COL.department = col.id;
-      else if (t.includes('laptop') && t.includes('model')) COL.laptop_model = col.id;
-      else if (t.includes('asset') && t.includes('tag')) COL.asset_tag = col.id;
-      else if (t.includes('serial')) COL.laptop_serial = col.id;
-      else if (t.includes('purchase') || t.includes('date')) COL.purchase_date = col.id;
-      else if (t === 'price' || t.includes('cost')) COL.price = col.id;
-      else if (t === 'mouse') COL.has_mouse = col.id;
-      else if (t === 'phone' && !t.includes('model')) COL.has_phone = col.id;
-      else if (t === 'monitor' && !t.includes('model')) COL.has_monitor = col.id;
-      else if (t.includes('phone') && t.includes('model')) COL.phone_model = col.id;
-      else if (t.includes('monitor') && t.includes('model')) COL.monitor_model = col.id;
-      else if (t === 'notes' || t === 'note') COL.notes = col.id;
-    });
-    localStorage.setItem('monday_cols', JSON.stringify(COL));
-    console.log('Columns discovered:', COL);
-  });
+  return Promise.resolve();
 }
 
 // ── PARSE ITEM ───────────────────────────────────────────────
@@ -608,36 +611,68 @@ function parseItem(item) {
     type: 'Employee',
     department: '',
     laptop_model: '',
+    laptop_type: '',
     asset_tag: '',
     laptop_serial: '',
     purchase_date: '',
     price: '',
+    invoice: '',
     has_mouse: false,
+    mouse_model: '',
+    mouse_serial: '',
     has_phone: false,
-    has_monitor: false,
     phone_model: '',
-    monitor_model: '',
+    phone_serial: '',
+    has_monitor: false,
+    monitor1_model: '',
+    monitor1_serial: '',
+    monitor2_model: '',
+    monitor2_serial: '',
+    has_keyboard: false,
+    other_devices: '',
     notes: ''
   };
 
+  var cvMap = {};
   (item.column_values || []).forEach(function(cv) {
-    var val = cv.text || '';
-    var id = cv.id;
-    if (id === COL.status) r.status = val || 'Active';
-    else if (id === COL.type_col) r.type = val || 'Employee';
-    else if (id === COL.department) r.department = val;
-    else if (id === COL.laptop_model) r.laptop_model = val;
-    else if (id === COL.asset_tag) r.asset_tag = val;
-    else if (id === COL.laptop_serial) r.laptop_serial = val;
-    else if (id === COL.purchase_date) r.purchase_date = val;
-    else if (id === COL.price) r.price = val;
-    else if (id === COL.has_mouse) r.has_mouse = val === 'true' || val === 'v' || val === '1';
-    else if (id === COL.has_phone) r.has_phone = val === 'true' || val === 'v' || val === '1';
-    else if (id === COL.has_monitor) r.has_monitor = val === 'true' || val === 'v' || val === '1';
-    else if (id === COL.phone_model) r.phone_model = val;
-    else if (id === COL.monitor_model) r.monitor_model = val;
-    else if (id === COL.notes) r.notes = val;
+    cvMap[cv.id] = cv.text || '';
   });
+
+  r.status       = cvMap[COL.status] || 'Active';
+  r.type         = cvMap[COL.type_col] || 'Employee';
+  r.department   = cvMap[COL.department] || '';
+  r.laptop_type  = cvMap[COL.laptop_type] || '';
+  r.laptop_model = cvMap[COL.laptop_model] || '';
+  r.laptop_serial= cvMap[COL.laptop_serial] || '';
+  r.asset_tag    = cvMap[COL.laptop_tag] || '';
+  r.purchase_date= cvMap[COL.purchase_date] || '';
+  r.price        = cvMap[COL.price] || '';
+  r.invoice      = cvMap[COL.invoice] || '';
+
+  // Mouse — has one if asset_type_2 has a value
+  r.mouse_model  = cvMap[COL.mouse_model] || '';
+  r.mouse_serial = cvMap[COL.mouse_serial] || '';
+  r.has_mouse    = !!(cvMap[COL.mouse_type] && cvMap[COL.mouse_type].trim());
+
+  // Phone
+  r.phone_model  = cvMap[COL.phone_model] || '';
+  r.phone_serial = cvMap[COL.phone_serial] || '';
+  r.has_phone    = !!(cvMap[COL.phone_type] && cvMap[COL.phone_type].trim());
+
+  // Monitor
+  r.monitor1_model  = cvMap[COL.monitor1_model] || '';
+  r.monitor1_serial = cvMap[COL.monitor1_serial] || '';
+  r.monitor2_model  = cvMap[COL.monitor2_model] || '';
+  r.monitor2_serial = cvMap[COL.monitor2_serial] || '';
+  r.has_monitor  = !!(cvMap[COL.monitor1_type] && cvMap[COL.monitor1_type].trim()) ||
+                   !!(cvMap[COL.monitor2_type] && cvMap[COL.monitor2_type].trim());
+
+  // Keyboard
+  r.has_keyboard = !!(cvMap[COL.keyboard_type] && cvMap[COL.keyboard_type].trim());
+
+  // Other
+  r.other_devices = cvMap[COL.other_devices] || '';
+
   return r;
 }
 
@@ -660,8 +695,8 @@ function syncNow() {
   document.getElementById('loading').classList.remove('hidden');
 
   // First discover columns, then load items
-  var savedCols = localStorage.getItem('monday_cols');
-  var ready = savedCols ? (Object.assign(COL, JSON.parse(savedCols)), Promise.resolve()) : discoverColumns();
+  // Column IDs are hardcoded — no discovery needed
+  var ready = Promise.resolve();
 
   ready.then(function() {
     return loadAllItems();
@@ -937,7 +972,8 @@ function renderTbl() {
              '<span class="badge bt">Employee</span>';
     var chips = (r.has_mouse ? '<span class="chip">mouse</span>' : '') +
                 (r.has_phone ? '<span class="chip">phone</span>' : '') +
-                (r.has_monitor ? '<span class="chip">monitor</span>' : '');
+                (r.has_monitor ? '<span class="chip">monitor</span>' : '') +
+                (r.has_keyboard ? '<span class="chip">keyboard</span>' : '');
     var price = r.price && !isNaN(+r.price) && +r.price < 50000 ? 'EUR' + (+r.price).toFixed(0) : '—';
     var idx = DB.indexOf(r);
     return '<tr>' +
@@ -1054,6 +1090,7 @@ function clearForm() {
   document.getElementById('f-dept-m').value = '';
   document.getElementById('f-status').value = 'Active';
   ['f-mouse','f-phone','f-monitor'].forEach(function(id){document.getElementById(id).checked=false;});
+  var m2 = document.getElementById('f-monitor2-model'); if(m2) m2.value='';
 }
 
 function fillForm(r) {
@@ -1070,7 +1107,8 @@ function fillForm(r) {
   document.getElementById('f-phone').checked = !!r.has_phone;
   document.getElementById('f-monitor').checked = !!r.has_monitor;
   document.getElementById('f-phone-model').value = r.phone_model||'';
-  document.getElementById('f-monitor-model').value = r.monitor_model||'';
+  document.getElementById('f-monitor-model').value = r.monitor1_model||'';
+  document.getElementById('f-monitor2-model').value = r.monitor2_model||'';
   document.getElementById('f-notes').value = r.notes||'';
 }
 
