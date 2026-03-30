@@ -441,22 +441,46 @@ td{padding:9px 11px;vertical-align:middle;}
 </main>
 </div>
 
-<!-- MODAL -->
+<!-- DETAIL / EDIT MODAL -->
 <div class="overlay" id="modal-overlay">
-  <div class="modal">
-    <div class="mh">
-      <div class="av" id="modal-av" style="width:36px;height:36px;font-size:13px;border-radius:8px;background:var(--acc);">+</div>
-      <div>
-        <div style="font-size:15px;font-weight:800;" id="modal-title">Add Asset</div>
-        <div style="font-size:12px;color:var(--t4);margin-top:2px;" id="modal-sub">New record in Monday.com</div>
+  <div class="modal" style="width:720px;">
+    <div class="mh" style="background:linear-gradient(135deg,var(--s1) 60%,var(--acc-d2));">
+      <div class="av" id="modal-av" style="width:44px;height:44px;font-size:16px;border-radius:10px;background:var(--acc);flex-shrink:0;">+</div>
+      <div style="flex:1;">
+        <div style="font-size:16px;font-weight:800;letter-spacing:-.3px;" id="modal-title">Add Asset</div>
+        <div style="font-size:12px;color:var(--t4);margin-top:2px;" id="modal-sub">New record</div>
       </div>
-      <button class="mclose" onclick="closeModal()">x</button>
+      <div id="modal-badges" style="display:flex;gap:5px;flex-wrap:wrap;"></div>
+      <button class="mclose" onclick="closeModal()" style="margin-left:12px;">&#x2715;</button>
     </div>
-    <div class="mb">
+
+    <!-- VIEW MODE -->
+    <div id="modal-view" class="mb" style="display:none;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div style="background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:10px 14px;">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t4);margin-bottom:3px;">Department</div>
+          <div style="font-size:13px;font-weight:600;" id="vw-dept">—</div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:10px 14px;">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t4);margin-bottom:3px;">Purchase Date</div>
+          <div style="font-size:13px;font-weight:600;font-family:var(--mono);" id="vw-date">—</div>
+        </div>
+      </div>
+
+      <!-- Asset rows -->
+      <div id="vw-assets" style="display:flex;flex-direction:column;gap:8px;"></div>
+
+      <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end;">
+        <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+        <button class="btn btn-ghost" id="vw-edit-btn" onclick="switchToEdit()">Edit in Monday.com</button>
+      </div>
+    </div>
+
+    <!-- EDIT MODE -->
+    <div id="modal-edit" class="mb" style="display:none;">
       <div class="tabs">
         <div class="tab active" onclick="swTab(this,'t-info')">Employee</div>
         <div class="tab" onclick="swTab(this,'t-assets')">Assets</div>
-        <div class="tab" onclick="swTab(this,'t-notes')">Notes</div>
       </div>
       <div id="t-info">
         <div class="fgrid">
@@ -465,7 +489,7 @@ td{padding:9px 11px;vertical-align:middle;}
           <div class="fg"><label>Department</label>
             <select id="f-dept-m">
               <option value="">Select...</option>
-              <option>Product &amp; Engg</option><option>R&amp;D</option><option>Operations</option>
+              <option>Product &amp;Engg</option><option>R&amp;D</option><option>Operations</option>
               <option>Finance</option><option>Commercial</option><option>Marketing</option>
               <option>People and places</option><option>Sales</option><option>IT</option>
             </select>
@@ -476,34 +500,33 @@ td{padding:9px 11px;vertical-align:middle;}
       <div id="t-assets" style="display:none;">
         <div class="slbl2">Laptop</div>
         <div class="fgrid">
-          <div class="fg"><label>Laptop Model</label><input id="f-laptop" type="text" placeholder="e.g. HP Probook 445 G11"></div>
+          <div class="fg"><label>Model</label><input id="f-laptop" type="text" placeholder="e.g. HP Probook 445 G11"></div>
           <div class="fg"><label>Asset Tag</label><input id="f-tag" type="text" placeholder="e.g. AMS-LAP-140"></div>
           <div class="fg"><label>Serial Number</label><input id="f-serial" type="text" placeholder="e.g. 1H844508WL"></div>
           <div class="fg"><label>Purchase Date</label><input id="f-date" type="date"></div>
           <div class="fg"><label>Price (EUR)</label><input id="f-price" type="number" step="0.01" placeholder="e.g. 944"></div>
         </div>
-        <div class="slbl2">Accessories</div>
-        <div style="display:flex;gap:18px;margin-bottom:12px;">
-          <label class="cbrow"><input type="checkbox" id="f-mouse"><span>Mouse</span></label>
-          <label class="cbrow"><input type="checkbox" id="f-phone"><span>Phone</span></label>
-          <label class="cbrow"><input type="checkbox" id="f-monitor"><span>Monitor</span></label>
-        </div>
+        <div class="slbl2">Phone</div>
         <div class="fgrid">
           <div class="fg"><label>Phone Model</label><input id="f-phone-model" type="text" placeholder="e.g. Samsung Galaxy S22"></div>
-          <div class="fg"><label>Monitor 1 Model</label><input id="f-monitor-model" type="text" placeholder="e.g. AOC 27 inch"></div>
-          <div class="fg"><label>Monitor 2 Model</label><input id="f-monitor2-model" type="text" placeholder="e.g. LG UHD 4K"></div>
+          <div class="fg"><label>Phone Serial</label><input id="f-phone-serial" type="text" placeholder="Serial number"></div>
         </div>
-      </div>
-      <div id="t-notes" style="display:none;">
-        <div class="fg" style="margin-top:4px;"><label>Notes</label><textarea id="f-notes" placeholder="Repair history, special setup, known issues..."></textarea></div>
+        <div class="slbl2">Monitor</div>
+        <div class="fgrid">
+          <div class="fg"><label>Monitor 1 Model</label><input id="f-monitor-model" type="text" placeholder="e.g. AOC 27 inch"></div>
+          <div class="fg"><label>Monitor 1 Serial</label><input id="f-monitor-serial" type="text" placeholder="Serial number"></div>
+          <div class="fg"><label>Monitor 2 Model</label><input id="f-monitor2-model" type="text" placeholder="e.g. LG UHD 4K"></div>
+          <div class="fg"><label>Monitor 2 Serial</label><input id="f-monitor2-serial" type="text" placeholder="Serial number"></div>
+        </div>
       </div>
       <input type="hidden" id="f-id">
       <div class="frow2">
         <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-        <button class="btn btn-danger btn-sm" id="del-btn" style="display:none;" onclick="confirmDelete()">Delete from Monday</button>
-        <button class="btn btn-acc" onclick="saveRecord()" id="save-btn">Save to Monday.com</button>
+        <button class="btn btn-danger btn-sm" id="del-btn" style="display:none;" onclick="confirmDelete()">Delete</button>
+        <button class="btn btn-acc" onclick="saveRecord()">Save to Monday.com</button>
       </div>
     </div>
+
   </div>
 </div>
 
@@ -1061,10 +1084,13 @@ function renderSetup() {
 function openAdd() {
   editIdx = -1; editItemId = null;
   document.getElementById('modal-title').textContent = 'Add Asset';
-  document.getElementById('modal-sub').textContent = 'Creates a new item in Monday.com';
+  document.getElementById('modal-sub').textContent = 'New record in Monday.com';
   document.getElementById('modal-av').textContent = '+';
+  document.getElementById('modal-badges').innerHTML = '';
   document.getElementById('del-btn').style.display = 'none';
   clearForm();
+  document.getElementById('modal-view').style.display = 'none';
+  document.getElementById('modal-edit').style.display = 'block';
   document.getElementById('modal-overlay').classList.add('open');
   swTab(document.querySelector('.tab'), 't-info');
 }
@@ -1073,12 +1099,160 @@ function openEdit(idx) {
   editIdx = idx;
   var r = DB[idx];
   editItemId = r.id;
-  document.getElementById('modal-title').textContent = 'Edit Record';
-  document.getElementById('modal-sub').textContent = r.name;
-  document.getElementById('modal-av').textContent = r.name.split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase();
-  document.getElementById('del-btn').style.display = '';
-  fillForm(r);
+  var init = r.name.split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase();
+  document.getElementById('modal-av').textContent = init;
+  document.getElementById('modal-title').textContent = r.name;
+  document.getElementById('modal-sub').textContent = (r.type||'Employee') + (r.department ? '  •  ' + r.department : '');
+
+  // Status badge
+  var sb = r.status === 'Active' ?
+    '<span class="badge bg">Active</span>' :
+    '<span class="badge br">Offboarded</span>';
+  var tb = r.type === 'Intern' ? '<span class="badge bv">Intern</span>' :
+           r.type === 'Contractor' ? '<span class="badge ba">Contractor</span>' :
+           '<span class="badge bt">Employee</span>';
+  document.getElementById('modal-badges').innerHTML = tb + ' ' + sb;
+
+  // Populate view mode
+  document.getElementById('vw-dept').textContent = r.department || '—';
+  document.getElementById('vw-date').textContent = r.purchase_date || '—';
+
+  // Build asset rows
+  var assets = [];
+
+  // Laptop
+  if (r.laptop_type || r.laptop_model || r.laptop_serial || r.asset_tag) {
+    assets.push({
+      icon: 'Laptop',
+      color: 'var(--acc)',
+      model: r.laptop_model || r.laptop_type || '—',
+      tag: r.asset_tag,
+      serial: r.laptop_serial,
+      extra: r.price ? 'EUR' + (+r.price).toFixed(0) : ''
+    });
+  }
+
+  // Mouse
+  if (r.has_mouse || r.mouse_model) {
+    assets.push({
+      icon: 'Mouse',
+      color: 'var(--teal)',
+      model: r.mouse_model || 'Assigned',
+      tag: r.mouse_tag || '',
+      serial: r.mouse_serial,
+      extra: ''
+    });
+  }
+
+  // Phone
+  if (r.has_phone || r.phone_model) {
+    assets.push({
+      icon: 'Phone',
+      color: 'var(--green)',
+      model: r.phone_model || 'Assigned',
+      tag: r.phone_tag || '',
+      serial: r.phone_serial,
+      extra: ''
+    });
+  }
+
+  // Monitor 1
+  if (r.monitor1_model || r.has_monitor) {
+    assets.push({
+      icon: 'Monitor 1',
+      color: 'var(--violet)',
+      model: r.monitor1_model || 'Assigned',
+      tag: '',
+      serial: r.monitor1_serial,
+      extra: ''
+    });
+  }
+
+  // Monitor 2
+  if (r.monitor2_model) {
+    assets.push({
+      icon: 'Monitor 2',
+      color: 'var(--violet)',
+      model: r.monitor2_model || 'Assigned',
+      tag: '',
+      serial: r.monitor2_serial,
+      extra: ''
+    });
+  }
+
+  // Keyboard
+  if (r.has_keyboard) {
+    assets.push({
+      icon: 'Keyboard',
+      color: 'var(--amber)',
+      model: 'Assigned',
+      tag: '',
+      serial: '',
+      extra: ''
+    });
+  }
+
+  // Other devices
+  if (r.other_devices) {
+    assets.push({
+      icon: 'Other',
+      color: 'var(--t3)',
+      model: r.other_devices,
+      tag: '',
+      serial: '',
+      extra: ''
+    });
+  }
+
+  var assetHTML = '';
+  if (assets.length === 0) {
+    assetHTML = '<div style="padding:20px;text-align:center;color:var(--t4);font-size:13px;">No assets recorded</div>';
+  } else {
+    assetHTML = assets.map(function(a) {
+      var rows = '';
+      rows += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">';
+      // Model
+      rows += '<div style="flex:1;min-width:180px;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t4);">Model</div><div style="font-size:13px;font-weight:600;color:var(--t1);margin-top:2px;">' + esc(a.model) + '</div></div>';
+      // Tag
+      if (a.tag) {
+        rows += '<div style="min-width:110px;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t4);">Asset Tag</div><div style="font-size:12px;font-family:var(--mono);color:var(--t2);margin-top:2px;">' + esc(a.tag) + '</div></div>';
+      } else {
+        rows += '<div style="min-width:110px;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t4);">Asset Tag</div><div style="font-size:12px;color:var(--t4);margin-top:2px;">—</div></div>';
+      }
+      // Serial
+      if (a.serial) {
+        rows += '<div style="min-width:160px;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t4);">Serial Number</div><div style="font-size:12px;font-family:var(--mono);color:var(--t2);margin-top:2px;">' + esc(a.serial) + '</div></div>';
+      } else {
+        rows += '<div style="min-width:160px;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t4);">Serial Number</div><div style="font-size:12px;color:var(--red);margin-top:2px;font-weight:600;">Missing</div></div>';
+      }
+      // Extra (price)
+      if (a.extra) {
+        rows += '<div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t4);">Price</div><div style="font-size:13px;font-family:var(--mono);font-weight:600;color:var(--t1);margin-top:2px;">' + esc(a.extra) + '</div></div>';
+      }
+      rows += '</div>';
+
+      return '<div style="background:var(--s2);border:1.5px solid var(--b1);border-radius:9px;padding:12px 14px;">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">' +
+        '<div style="width:8px;height:8px;border-radius:50%;background:' + a.color + ';flex-shrink:0;"></div>' +
+        '<div style="font-size:12px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.06em;">' + a.icon + '</div>' +
+        '</div>' + rows + '</div>';
+    }).join('');
+  }
+
+  document.getElementById('vw-assets').innerHTML = assetHTML;
+
+  // Show view mode
+  document.getElementById('modal-view').style.display = 'block';
+  document.getElementById('modal-edit').style.display = 'none';
   document.getElementById('modal-overlay').classList.add('open');
+}
+
+function switchToEdit() {
+  var r = DB[editIdx];
+  fillForm(r);
+  document.getElementById('del-btn').style.display = '';
+  document.getElementById('modal-view').style.display = 'none';
+  document.getElementById('modal-edit').style.display = 'block';
   swTab(document.querySelector('.tab'), 't-info');
 }
 
