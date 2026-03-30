@@ -256,6 +256,7 @@ td{padding:9px 11px;vertical-align:middle;}
     <div class="ni" onclick="nav('laptops',this)"><span class="ni-icon">&#x1F4BB;</span>Laptops</div>
     <div class="ni" onclick="nav('phones',this)"><span class="ni-icon">&#x1F4F1;</span>Phones</div>
     <div class="ni" onclick="nav('monitors',this)"><span class="ni-icon">&#x1F5A5;</span>Monitors</div>
+    <div class="ni" onclick="nav('mice',this)"><span class="ni-icon">&#x1F5B1;</span>Mice</div>
     <div class="ni" onclick="nav('keyboards',this)"><span class="ni-icon">&#x2328;</span>Keyboards</div>
     <div class="ni" onclick="nav('inventory',this)"><span class="ni-icon">&#x1F4E6;</span>Available Pool<span class="nbadge neutral" id="nb-inventory">—</span></div>
     <div class="sb-sec">Workflows</div>
@@ -403,6 +404,25 @@ td{padding:9px 11px;vertical-align:middle;}
               <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Department</th>
             </tr></thead>
             <tbody id="keyboard-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MICE -->
+    <div id="p-mice" class="panel">
+      <div class="card" style="margin-bottom:16px;">
+        <div class="ch"><span class="ct">Mice / Wireless Mice</span><span id="mice-count" style="font-size:12px;color:var(--t4);font-family:var(--mono);"></span></div>
+        <div class="cb">
+          <div id="mice-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;"></div>
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead><tr style="border-bottom:2px solid var(--b1);background:var(--s2);">
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Employee</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Model</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Serial Number</th>
+              <th style="padding:8px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--t4);">Department</th>
+            </tr></thead>
+            <tbody id="mice-tbody"></tbody>
           </table>
         </div>
       </div>
@@ -965,6 +985,7 @@ var PAGE_META = {
   laptops:    ['Laptops','Fleet overview'],
   phones:     ['Phones','Fleet overview'],
   monitors:   ['Monitors','Fleet overview'],
+  mice:       ['Mice','Fleet overview'],
   keyboards:  ['Keyboards','Fleet overview'],
   inventory:  ['Available Pool','Unassigned assets'],
   onboard:    ['Onboarding','New employee workflow'],
@@ -982,10 +1003,16 @@ function nav(id, el) {
   currentPage = id;
   var meta = PAGE_META[id] || [id, ''];
   document.getElementById('pg-title').innerHTML = meta[0] + '<span class="tb-sub">' + meta[1] + '</span>';
-  if (id === 'assets') renderTbl();
-  if (id === 'reports') renderReports();
-  if (id === 'alerts') renderAlerts();
-  if (id === 'setup') renderSetup();
+  if (id === 'assets')    renderTbl();
+  if (id === 'laptops')   renderLaptops();
+  if (id === 'mice')      renderMice();
+  if (id === 'phones')    renderPhones();
+  if (id === 'monitors')  renderMonitors();
+  if (id === 'keyboards') renderKeyboards();
+  if (id === 'inventory') renderInventory();
+  if (id === 'reports')   renderReports();
+  if (id === 'alerts')    renderAlerts();
+  if (id === 'setup')     renderSetup();
 }
 
 function isAvailable(r) {
@@ -1007,6 +1034,7 @@ function renderAll() {
   if (currentPage === 'laptops')   renderLaptops();
   if (currentPage === 'phones')    renderPhones();
   if (currentPage === 'monitors')  renderMonitors();
+  if (currentPage === 'mice')      renderMice();
   if (currentPage === 'keyboards') renderKeyboards();
   if (currentPage === 'inventory') renderInventory();
   if (currentPage === 'reports')   renderReports();
@@ -1224,6 +1252,20 @@ function renderMonitors() {
       '<td style="' + tdStyle('font-size:12px;color:var(--t3);') + '">' + (r.department||'—') + '</td>' +
       '</tr>';
   }).join('') || '<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--t4);">No monitors found</td></tr>';
+}
+
+function renderMice() {
+  var items = activeEmployees().filter(function(r){ return r.has_mouse || r.mouse_model; });
+  summaryCards(items, function(r){return r.mouse_model;}, 'mice-summary', 'mice-count', 'Model');
+  document.getElementById('mice-tbody').innerHTML = items.map(function(r) {
+    var idx = DB.indexOf(r);
+    return '<tr style="' + rowStyle() + '" onclick="openEdit(' + idx + ')">' +
+      '<td style="' + tdStyle() + '"><div style="display:flex;align-items:center;gap:7px;"><div class="av" style="background:var(--teal);width:26px;height:26px;font-size:10px;">' + r.name.split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase() + '</div><span style="font-weight:600;">' + esc(r.name) + '</span></div></td>' +
+      '<td style="' + tdStyle('font-size:13px;') + '">' + esc(r.mouse_model||'Assigned') + '</td>' +
+      '<td style="' + tdStyle() + '">' + serialCell(r.mouse_serial) + '</td>' +
+      '<td style="' + tdStyle('font-size:12px;color:var(--t3);') + '">' + (r.department||'—') + '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--t4);">No mice found</td></tr>';
 }
 
 function renderKeyboards() {
